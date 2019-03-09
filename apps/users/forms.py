@@ -14,3 +14,14 @@ class RegisterForm(forms.Form):
     email = forms.EmailField(required = True, min_length = 5)
     password = forms.CharField(required = True , min_length = 5)
     captcha = CaptchaField(error_messages={"invalid":u"验证码错误"})
+
+
+class ForgetPwdForm(forms.Form):
+    email = forms.EmailField(required = True, min_length = 5)
+    captcha = CaptchaField(error_messages={"invalid":u"验证码错误"})
+
+class resetPwdForm(forms.Form):
+    password = forms.CharField(required = True , min_length = 5)
+    password2 = forms.CharField(required = True , min_length = 5)
+    
+    

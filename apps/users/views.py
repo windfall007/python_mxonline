@@ -3,11 +3,12 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate,login #验证方法
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password #加密密码
-from django.db.models import Q #并级
+from django.db.models import Q #并级查询数据
 from django.views.generic.base import View
+from django.http import HttpResponse
 
 
-from .forms import LoginForm,RegisterForm
+from .forms import LoginForm,RegisterForm,ForgetPwdForm,resetPwdForm
 from .models import Userprofile,EmailVerifyRecoed
 from utils.email_send import send_register_email
 
@@ -69,7 +70,7 @@ class LoginView(View):
         else:
             return render(request,"login.html",{"login_form":login_form})
 
-
+#用户注册
 class RegisterView(View):
     def get(self,request):
         #get请求
@@ -81,6 +82,10 @@ class RegisterView(View):
         if register_form.is_valid():
             email_str = request.POST.get("email","")
             pass_word = request.POST.get("password","")
+
+            if Userprofile.objects.filter(email = email_str):
+                return render(request, "register.html", {"msg":"该邮箱已经被注册","register_form":register_form})
+
             user_pro = Userprofile()
             user_pro.username = email_str
             user_pro.email  = email_str
@@ -95,6 +100,7 @@ class RegisterView(View):
             return render(request, "register.html", {"register_form":register_form})
 
 
+#用户激活
 class ActiveUserView(View):
     def get(self, request, active_code):
         emailVerify =  EmailVerifyRecoed.objects.filter(code = active_code)
@@ -105,3 +111,54 @@ class ActiveUserView(View):
                 user.is_active = True
                 user.save()
             return render(request, "login.html")
+        else:
+            return render(request, "404.html")
+
+#忘记密码
+class ForgetPwdView(View):
+    def get(self, request):
+        forget_passwd_form = ForgetPwdForm()
+        return render(request, "forgetpwd.html",{"forget_passwd_form":forget_passwd_form})
+    
+    def post(self,request):
+        forget_passwd_form = ForgetPwdForm(request.POST)
+        if forget_passwd_form.is_valid():
+            email_str = request.POST.get("email","")
+            #发送验证邮件
+            send_register_email(email_str,"reset")
+            return HttpResponse(u"邮件已发送到您的邮箱!")
+        else:
+            return render(request, "forgetpwd.html", {"forget_passwd_form":forget_passwd_form})
+
+#重置密码
+class PwdResetView(View):
+    def get(self, request,reset_code):
+        emailVerify = EmailVerifyRecoed.objects.filter(code = reset_code)
+        if emailVerify:
+            for record in emailVerify:
+                email = record.email
+                return render(request, "password_reset.html", {"email":email})
+        else:
+            return render(request, "404.html")
+    
+
+class setNewPwdView(View):
+    def post(self, request):
+        useremail = request.POST.get("email", "")
+        password = request.POST.get('password','')
+        password2 = request.POST.get('password2','')
+        reset_pwd_form = resetPwdForm(request.POST)
+        if reset_pwd_form.is_valid():
+            if password != password2:
+                return render(request, "password_reset.html", {"email":useremail,"reset_pwd_form":reset_pwd_form,"msg":'密码不一致'})
+           
+            user = Userprofile.objects.get(email = useremail)
+            user.password = make_password(password2)
+            user.save()
+            return render(request, "login.html")
+        else:
+            return render(request, "password_reset.html", {"email":useremail,"reset_pwd_form":reset_pwd_form})    
+    
+
+
+

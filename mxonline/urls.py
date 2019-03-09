@@ -18,13 +18,18 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 import xadmin
 
-from users.views import LoginView,RegisterView,ActiveUserView
+from users.views import LoginView,RegisterView,ActiveUserView,ForgetPwdView,PwdResetView,setNewPwdView
+
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
     url('^$',TemplateView.as_view(template_name = "index.html"), name ="index"),
     url('^login/$',LoginView.as_view(), name ="login"),
     url('^register/$',RegisterView.as_view(), name ="register"),
-    url(r'^captcha/$', include('captcha.urls')),#验证码
-    url(r'^active/(?P<active_code>.*)/$',ActiveUserView.as_view(),name="active")
+    url(r'^active/(?P<active_code>.*)/$',ActiveUserView.as_view(),name="active"),
+    url(r'^forget_password/$', ForgetPwdView.as_view(), name="forgetpwd"),
+    url(r'^reset/(?P<reset_code>.*)/$', PwdResetView.as_view(), name="reset"),
+    url('^setnewpwd/$',setNewPwdView.as_view(), name ="setnewpwd"),
+    url(r'^captcha/', include('captcha.urls')),#验证码
 ]
+

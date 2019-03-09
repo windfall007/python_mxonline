@@ -19,10 +19,12 @@ def random_str(randomlength=8):
 
 def send_register_email(email,send_type = "register"):
     email_record = EmailVerifyRecoed()
+    #生成随机16位的字符串
     random_code = random_str(16)
     email_record.code =random_code
     email_record.email = email
     email_record.send_type = send_type
+    #保存验证码到数据库
     email_record.save()
 
     email_title = ""
@@ -30,6 +32,13 @@ def send_register_email(email,send_type = "register"):
     if send_type == "register":
         email_title = "墓穴王用户注册激活链接"
         email_content = "请点击下面的链接激活你的账号: http://127.0.0.1:8000/active/{0}".format(random_code)
+        send_status =  send_mail(email_title,email_content,DEFAULT_FROM_EMAIL,[email])
+        if send_status:
+            pass
+
+    elif send_type == "reset":
+        email_title = "墓穴王用户充值密码链接"
+        email_content = "请点击下面的链接重置你的账号密码: http://127.0.0.1:8000/reset/{0}".format(random_code)
         send_status =  send_mail(email_title,email_content,DEFAULT_FROM_EMAIL,[email])
         if send_status:
             pass

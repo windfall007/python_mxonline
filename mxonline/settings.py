@@ -82,6 +82,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'builtins' : [ #静态文件夹目录
+                'django.templatetags.static'
+            ],
         },
     },
 ]
