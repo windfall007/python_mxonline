@@ -17,9 +17,12 @@ from django.conf.urls import url,include
 from django.contrib import admin
 from django.views.generic import TemplateView
 import xadmin
+from django.views.static import serve
+
 
 from users.views import LoginView,RegisterView,ActiveUserView,ForgetPwdView,PwdResetView,setNewPwdView
-
+from organization.views import orglistView
+from mxonline.settings import MEDIA_ROOT
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
@@ -31,5 +34,9 @@ urlpatterns = [
     url(r'^reset/(?P<reset_code>.*)/$', PwdResetView.as_view(), name="reset"),
     url('^setnewpwd/$',setNewPwdView.as_view(), name ="setnewpwd"),
     url(r'^captcha/', include('captcha.urls')),#验证码
+    url(r'^orglist/$',orglistView.as_view(), name ="orglist"),
+
+    #配置文件上传访问的函数
+    url(r'^media/(?P<path>.*)$',  serve, {"document_root":MEDIA_ROOT}),
 ]
 

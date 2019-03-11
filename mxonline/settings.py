@@ -49,9 +49,10 @@ INSTALLED_APPS = [
     'courses',
     'operation',
     'organization',
-    'xadmin',
-    'crispy_forms',
-    'captcha'
+    'xadmin', #后台
+    'crispy_forms', #验证码
+    'captcha', #验证码
+    'pure_pagination', #分页
 ]
 
 #在通过AbstractUser类创建用户类时，可添加自定义字段，同时必须注意的是继承该类必须在setting.py中声明使用，
@@ -81,6 +82,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',#配置展示的上传文件目录MEDIA_URL才能生效
             ],
             'builtins' : [ #静态文件夹目录
                 'django.templatetags.static'
@@ -153,6 +155,14 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR,'static'),
 )
 
+#上传文件路径配置
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+
+
+
+
+#自动发送邮件配置
 EMAIL_USE_SSL = True
 EMAIL_HOST = "smtp.qq.com"
 EMAIL_PORT = 465
@@ -160,3 +170,10 @@ EMAIL_HOST_USER ="515749390@qq.com"
 EMAIL_HOST_PASSWORD = "gkecqtndfbhqbhfj"
 EMAIL_FROM = "515749390@qq.com"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+#分页设置
+PAGINATION_SETTINGS = {
+    'PAGE_RANGE_DISPLAYED': 10,
+    'MARGIN_PAGES_DISPLAYED': 2,
+    'SHOW_FIRST_PAGE_WHEN_INVALID': True,
+}
