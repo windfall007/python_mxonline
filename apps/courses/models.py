@@ -2,15 +2,18 @@
 from django.db import models
 from datetime import datetime
 
+from organization.models import CouresOrg,Teacher
 # Create your models here.
 
 # 课程表设计
 class Coures(models.Model):
+    coures_org = models.ForeignKey(CouresOrg, verbose_name=u"机构名称",null=True, blank=True)
     name = models.CharField(max_length=50, verbose_name=u"课程名")
     desc = models.CharField(max_length=300, verbose_name=u"课程描述")
     detail = models.TextField(verbose_name=u"课程详情")
     degree = models.CharField(choices=(
         ("cj", u"初级"), ("zj", u"中级"), ("gj", u"高级")), max_length=2, verbose_name=u"课程难度")
+    teacher = models.ForeignKey(Teacher, verbose_name=u"讲师", null=True, blank=True)
     learn_times = models.IntegerField(default=0, verbose_name=u"学习时长（分钟）")
     students = models.IntegerField(default=0, verbose_name=u"学习人数")
     fav_num = models.IntegerField(default=0, verbose_name=u"收藏人数")

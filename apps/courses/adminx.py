@@ -5,9 +5,9 @@ from .models import Coures,Lesson,Video,CouresRes
 
 
 class CouresAdmin(object):
-    list_display = ['cover','name','desc','detail','degree','degree','learn_times','students','fav_num','click_nums','add_time']
-    search_fields = ['cover','name','desc','detail','degree','degree','learn_times','students','fav_num','click_nums']
-    list_filter =  ['cover','name','desc','detail','degree','degree','learn_times','students','fav_num','click_nums','add_time']
+    list_display = ['coures_org','cover','name','desc','detail','degree','teacher','degree','learn_times','students','fav_num','click_nums','add_time']
+    search_fields = ['coures_org','cover','name','desc','detail','degree','teacher','degree','learn_times','students','fav_num','click_nums']
+    list_filter =  ['coures_org','cover','name','desc','detail','degree','teacher','degree','learn_times','students','fav_num','click_nums','add_time']
 
 
 class LessonAdmin(object):

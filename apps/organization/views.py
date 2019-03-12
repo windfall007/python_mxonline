@@ -1,12 +1,14 @@
 #-*- encodeing:utf-8 -*-
 from django.shortcuts import render
 from django.views.generic.base import View
-
+from django.http import HttpResponse
 
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 
 
 from .models import CouresOrg,CityDict
+from .forms import UserAskForm
+
 # Create your views here.
 class orglistView(View):
     def get(self,request):
@@ -53,3 +55,20 @@ class orglistView(View):
             'hot_org':hot_org,
             'sort':sort
         })
+
+
+class AddUserAskView(View):
+    def post(self,request):
+        #将提交的数据直接在form验证表单
+        userask_form = UserAskForm(request.POST)
+        if userask_form.is_valid():
+            #如果不填commit = True  数据库不会保存值
+            user_ask = userask_form.save(commit=True)
+            return HttpResponse('{"status":"success"}', content_type='application/json')
+        else:
+            return HttpResponse('{"status":"fail", "msg":"添加出错"}', content_type='application/json')
+
+
+class OrgHomeView(View):
+    def get(self,request,org_id):
+        return render(request, "org-base.html")
