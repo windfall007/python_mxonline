@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import HttpResponse
 
-from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
+from pure_pagination import Paginator, EmptyPage, PageNotAnInteger #分页插件
 
 
 from .models import CouresOrg,CityDict
@@ -68,7 +68,57 @@ class AddUserAskView(View):
         else:
             return HttpResponse('{"status":"fail", "msg":"添加出错"}', content_type='application/json')
 
-
+#机构首页
 class OrgHomeView(View):
     def get(self,request,org_id):
-        return render(request, "org-base.html")
+        coures_org = CouresOrg.objects.get(id=int(org_id))
+        coures_org.click_num +=1
+        coures_org.save()
+
+        #查询外键的数据
+        all_courses = coures_org.coures_set.all()[:3]
+        all_teachers =  coures_org.teacher_set.all()[:1]
+
+        return render(request, "org-detail-homepage.html",{
+            'all_courses':all_courses,
+            'all_teachers':all_teachers,
+            'coures_org':coures_org,
+            'activate_page':'a'
+        })
+
+#机构课程
+class OrgCouresView(View):
+    def get(self,request,org_id):
+        #查询外键的值
+        coures_org = CouresOrg.objects.get(id=int(org_id))
+        all_courses = coures_org.coures_set.all()
+
+        return render(request,"org-detail-course.html",{
+            'coures_org':coures_org,
+            'all_courses':all_courses,
+            'activate_page':'b'
+        })
+
+#机构介绍
+class OrgDescView(View):
+    def get(self,request,org_id):
+        coures_org = CouresOrg.objects.get(id=int(org_id))
+
+        return render(request,"org-detail-desc.html",{
+            'coures_org':coures_org,
+            'activate_page':'c'
+        })        
+
+#机构讲师
+class OrgTeacherView(View):
+    def get(self,request,org_id):
+        coures_org = CouresOrg.objects.get(id=int(org_id))
+        #查询外键的值
+        all_teachers =  coures_org.teacher_set.all()
+
+        return render(request,"org-detail-teachers.html",{
+            'coures_org':coures_org,
+            'all_teachers':all_teachers,
+            'activate_page':'d'
+        })       
+    
