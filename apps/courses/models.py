@@ -35,6 +35,18 @@ class Coures(models.Model):
         #通过外键lesson获取它的数量_set是Django自带的
         return self.lesson_set.all().count()
 
+    #short_description设置后可在adminX显示该字段
+    get_lesson_num.short_description = "章节数"
+
+    def get_learn_users(self):
+        #学习用户
+        #获取usercoures的models的长度5
+        return self.usercoures_set.all()[:5]
+
+    def get_course_lesson(self):
+        #所有课程的章节
+        return self.lesson_set.all()
+
 
 #章节表设计
 class Lesson(models.Model):
@@ -46,6 +58,9 @@ class Lesson(models.Model):
         verbose_name = u"课程章节"
         verbose_name_plural = verbose_name        
 
+    def get_lesson_video(self):
+        return self.video_set.all()
+
     def __str__(self):
         return self.name
     
@@ -54,11 +69,17 @@ class Lesson(models.Model):
 class Video(models.Model):
     lesson = models.ForeignKey(Lesson,verbose_name = u"章节")
     name = models.CharField(max_length=50, verbose_name=u"视频名称")
+    learn_times = models.IntegerField(default=0, verbose_name=u"学习时长(分钟数)")
+    url = models.CharField(max_length=200, default="", verbose_name=u"访问地址")
     add_time = models.DateField(default=datetime.now, verbose_name=u"添加时间")
 
     class Meta:
         verbose_name = u"视频列表"
         verbose_name_plural = verbose_name    
+    
+    def __str__(self):
+        return self.name
+    
 
 
 #课程资源

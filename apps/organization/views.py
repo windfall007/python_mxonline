@@ -166,7 +166,6 @@ class AddUserFavView(View):
                 data.fav_num = 0
             data.save()
 
-
         def addData(obj):
             data = obj.objects.get(id=int(fav_id))
             data.fav_num +=1

@@ -6,6 +6,9 @@ from django.views.generic.base import View
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Coures
+from operation.models import UserFav,UserCoures
+
+from utils.mixin_utils import LoginRequiredMixin
 # Create your views here.
 
 class CourseListView(View):
@@ -36,11 +39,53 @@ class CourseListView(View):
             'hot_courses':hot_courses
         })
 
+
+#判罚用户是否登录
+def validateUserLogin(request,fav_id,fav_type):
+    if request.user.is_authenticated():
+        print(request.user,fav_id,fav_type)
+        if UserFav.objects.filter(user=request.user, fav_id=fav_id, fav_type=fav_type):
+            return True
+        else:
+            return False
+    else:
+        return False
+
 class CourseDetailsView(View):
     def get(self,request,course_id):
         course = Coures.objects.get(id = int(course_id))
+        #增加课程点击数
         course.click_nums += 1
         course.save()
+
+        tag = course.tag
+        if tag:
+            #根据课程标签筛选出相关课程推荐
+            relate_coures = Coures.objects.filter(tag = tag)[:1]
+        else:
+            relate_coures = []
+        
+        #收藏课程
+        has_fav_course = validateUserLogin(request,course.id,1)
+        
+        #收藏机构
+        has_fav_org = validateUserLogin(request,course.coures_org.id,2)
+        
         return render(request,"course-detail.html",{
+            'course':course,
+            'relate_coures':relate_coures,
+            'has_fav_org':has_fav_org,
+            'has_fav_course':has_fav_course
+        })
+
+
+#继承修饰器， 没登录跳转到登录， 顺序 从左到右
+class CourseInfoView(LoginRequiredMixin,View):
+    def get(self,request,course_id):
+        course =  Coures.objects.get(id = int(course_id))
+        course.students += 1
+        course.save()
+
+        return render(request,'course-video.html',{
             'course':course
         })
