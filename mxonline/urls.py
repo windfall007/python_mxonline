@@ -21,7 +21,8 @@ from django.views.static import serve
 
 
 from users.views import LoginView,RegisterView,ActiveUserView,ForgetPwdView,PwdResetView,setNewPwdView
-from mxonline.settings import MEDIA_ROOT
+from courses.views import CourseListView
+from mxonline.settings import MEDIA_ROOT #上传文件夹路径
 
 
 urlpatterns = [
@@ -37,6 +38,9 @@ urlpatterns = [
 
     #课程机构url配置
     url(r'^org/', include('organization.urls', namespace="org")),
+
+    #公开课
+    url(r'^course/', include('courses.urls', namespace="course")),
 
     #配置文件上传访问的函数
     url(r'^media/(?P<path>.*)$',  serve, {"document_root":MEDIA_ROOT}),

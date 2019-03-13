@@ -107,9 +107,21 @@ class OrgCouresView(View):
         coures_org = CouresOrg.objects.get(id=int(org_id))
         all_courses = coures_org.coures_set.all()
         has_fav = validateUserLogin(request,coures_org.id,2)
+
+
+        #对课程机构进行分页
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        p = Paginator(all_courses, 2, request=request)
+
+        courses = p.page(page)
+
         return render(request,"org-detail-course.html",{
             'coures_org':coures_org,
-            'all_courses':all_courses,
+            'all_courses':courses,
             'activate_page':'b',
             'has_fav':has_fav
         })

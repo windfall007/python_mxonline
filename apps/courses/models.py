@@ -19,6 +19,9 @@ class Coures(models.Model):
     fav_num = models.IntegerField(default=0, verbose_name=u"收藏人数")
     cover = models.ImageField(upload_to="coures/%y/%m", verbose_name=u"课程封面")
     click_nums = models.IntegerField(default=0, verbose_name=u"点击数")
+    tag = models.CharField(max_length=10, blank=True, null=True, verbose_name=u"课程标签")
+    youneed_know = models.CharField(default="", max_length=300, verbose_name=u"课程须知")
+    teacher_tell = models.CharField(default="", max_length=300, verbose_name=u"老师告诉你")
     add_time = models.DateField(default=datetime.now, verbose_name=u"添加时间")
 
     class Meta:
@@ -27,6 +30,11 @@ class Coures(models.Model):
         
     def __str__(self):
         return self.name
+
+    def get_lesson_num(self):
+        #通过外键lesson获取它的数量_set是Django自带的
+        return self.lesson_set.all().count()
+
 
 #章节表设计
 class Lesson(models.Model):

@@ -7,7 +7,7 @@
         <a class="green fr more" href="{% url 'org:org_coures' coures_org.id %}">查看更多 > </a>
     </div>
     <div class="brief group_list">
-        {% for course in all_courses  %}
+        {% for course in all_courses.object_list  %}
             <div class="module1_5 box">
                 <a href="course-detail.html"><img width="214" src="{{ MEDIA_URL }}{{course.cover}}" /></a>
                 <div class="des">
@@ -23,6 +23,27 @@
                 </div>
             </div>          
         {% endfor %}
+        <div class="pageturn">
+            <ul>
+                {% if all_courses.has_previous %}
+                    <li class="long"><a href="?{{ all_courses.previous_page_number.querystring }}">上一页</a></li>
+                {% endif %}
+                {% for page in all_courses.pages %}
+                    {% if page %}
+                        {% ifequal page all_courses.number %}
+                        <li class="active">{{ page }}</li>
+                        {% else %}
+                            <li><a href="?{{page.querystring}}" class="page">{{page}}</a></li>
+                        {% endifequal %}
+                    {% else %}
+                        <li class="none">...</li>
+                    {% endif %}
+                {% endfor %}
+                {% if all_courses.has_next %}
+                <li class="long"><a href="?{{ all_courses.next_page_number.querystring }}">下一页</a></li>
+                {% endif %}   
+            </ul>               
+        </div>
     </div>
 </div>
 {% endblock content %}
