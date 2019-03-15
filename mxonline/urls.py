@@ -45,6 +45,9 @@ urlpatterns = [
     #用户相关操作：评论
     url(r'^operation/', include('operation.urls', namespace="operation")),
 
+    #公开课
+    url(r'^usercenter/', include('users.urls', namespace="user")),
+
     #配置文件上传访问的函数
     url(r'^media/(?P<path>.*)$',  serve, {"document_root":MEDIA_ROOT}),
 ]

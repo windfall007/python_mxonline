@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <title>个人信息- 慕学在线网</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/reset.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/animate.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/js/plugins/queryCity/css/cityLayout.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/lq.datetimepick.css" />
+    <script src="/static/js/jquery.min.js" type="text/javascript"></script>
+    <script src="/static/js/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
+</head>
+<body>
+    <section class="headerwrap headerwrap2">
+        <header>
+            <div class="header2 header">
+                <div class="top">
+                    <div class="wp">
+                        <div class="fl">
+                            <p>服务电话：<b>33333333</b></p>
+                        </div>
+                        <!--登录后跳转-->
+                        {% if request.user.is_authenticated %}
+                            <div class="personal">
+                                <dl class="user fr">
+                                    <dd>{{ user.username }}<img class="down fr" src="/static/images/top_down.png" /></dd>
+                                    <dt><img width="20" height="20" src="{{ MEDIA_URL }}{{ request.user.image }}" /></dt>
+                                </dl>
+                                <div class="userdetail">
+                                    <dl>
+                                        <dt><img width="80" height="80" src="{{ MEDIA_URL }}{{ request.user.image }}" /></dt>
+                                        <dd>
+                                            <h2>{{ request.user.nick_name }}</h2>
+                                            <p>{{ request.user.username }}</p>
+                                        </dd>
+                                    </dl>
+                                    <div class="btn">
+                                        <a class="personcenter fl" href="{% url 'user:usercenter_info' %}">进入个人中心</a>
+                                        <a class="fr" href="/logout/">退出</a>
+                                    </div>
+                                </div>
+                            </div>  
+                            {% else %}
+                            <a style="color:white" class="fr registerbtn" href="{% url 'register' %}">注册</a>
+                            <a style="color:white" class="fr loginbtn" href="{% url 'login' %}">登录</a>                   
+                        {% endif %}
+                        <a href="usercenter-message.html">
+                            <div class="msg-num"><span id="MsgNum">0</span></div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="middle">
+                    <div class="wp">
+                        <a href="/"><img class="fl" src="/static/images/logo2.png" /></a>
+                        <h1>我的慕学网</h1>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </section>
+
+
+
+    <!--crumbs start-->
+
+    <section>
+        <div class="wp">
+            <ul class="crumbs">
+                <li><a href="/">首页</a>></li>
+                <li><a href="{% url 'user:usercenter_info' %}">个人中心</a>></li>
+                <li>个人信息</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <div class="wp list personal_list">
+            <div class="left">
+                <ul>
+                    <li {% if request.path|slice:'16' == '/usercenter/info' %}class="active2"{% endif %}><a href="{% url 'user:usercenter_info' %}">个人资料</a></li>
+                    <li {% if request.path|slice:'20' == '/usercenter/mycourse' %}class="active2"{% endif %} ><a href="{% url 'user:usercenter_mycourse' %}">我的课程</a></li>
+                    <li {% if request.path|slice:'15' == '/usercenter/fav' %}class="active2"{% endif %}><a href="{% url 'user:usercenter_fav' %}?type=2">我的收藏</a></li>
+                    <li {% if request.path|slice:'19' == '/usercenter/message' %}class="active2"{% endif %}> <a href="{% url 'user:usercenter_message' %}" style="position: relative;">我的消息</a></li>
+                </ul>
+            </div>
+            <div class="right">
+                {% block right %} {% endblock right %}
+            </div>
+
+        </div>
+    </section>
+
+
+    <!--sidebar start-->
+    <section>
+        <ul class="sidebar">
+            <li class="qq">
+                <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=2023525077&site=qq&menu=yes"></a>
+            </li>
+            <li class="totop"></li>
+        </ul>
+    </section>
+    <!--sidebar end-->
+    <!--header start-->
+
+
+    <div class="bg" id="dialogBg"></div>
+    <script src="/static/js/selectUi.js" type='text/javascript'></script>
+    <script type="text/javascript" src="/static/js/plugins/laydate/laydate.js"></script>
+    <script src="/static/js/plugins/layer/layer.js"></script>
+    <script src="/static/js/plugins/queryCity/js/public.js" type="text/javascript"></script>
+    <script src="/static/js/unslider.js" type="text/javascript"></script>
+    <script src="/static/js/plugins/jquery.scrollLoading.js" type="text/javascript"></script>
+    <script src="/static/js/validateDialog.js" type="text/javascript"></script>
+    <script src="/static/js/deco-common.js" type="text/javascript"></script>
+
+    <script src='/static/js/plugins/jquery.upload.js' type='text/javascript'></script>
+    <script src="/static/js/validate.js" type="text/javascript"></script>
+    <script src="/static/js/deco-user.js"></script>
+    
+    {% block js %}{% endblock js %}
+</body>
+</html>

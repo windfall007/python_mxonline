@@ -2,6 +2,7 @@
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import HttpResponse
+from django.db.models import Q
 
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger #分页插件
 
@@ -26,6 +27,13 @@ class orglistView(View):
     def get(self,request):
         #查询数据库
         org_list = CouresOrg.objects.all()
+
+        search_keywords = request.GET.get('keywords', "")
+        if search_keywords:
+            #搜索联合查询 __i 不区分大小写，contains 类似 SQL得linke语句
+            org_list = org_list.filter(Q(name__icontains=search_keywords)|Q(desc__icontains=search_keywords)|Q(detail__icontains=search_keywords))
+
+        
         all_city = CityDict.objects.all()
         cityid = request.GET.get('city','')
         category = request.GET.get('ct','')
@@ -220,6 +228,15 @@ class AddUserFavView(View):
 class TeacherListView(View):
     def get(self,request):
         all_teacher =  Teacher.objects.all()
+
+        search_keywords = request.GET.get('keywords', "")
+        if search_keywords:
+            #搜索联合查询 __i 不区分大小写，contains 类似 SQL得linke语句
+            all_teacher = all_teacher.filter(Q(name__icontains=search_keywords)|
+                                               Q(work_company__icontains=search_keywords)|
+                                               Q(work_position__icontains=search_keywords))
+
+
         sort = request.GET.get('sort', '')
         if sort == 'hot':
             all_teacher =  all_teacher.order_by('-click_num')
@@ -250,6 +267,9 @@ class TeacherDetailsView(View):
         teacher.click_num += 1
         teacher.save()
 
+        has_fav_teacher = validateUserLogin(request,teacher_id,3)
+        has_fav_org = validateUserLogin(request,teacher.org.id,2)
+
         all_coures_list =  Coures.objects.filter(teacher =teacher,coures_org = teacher.org)
 
 
@@ -258,5 +278,7 @@ class TeacherDetailsView(View):
         return render(request,'teacher-detail.html',{
             'teacher':teacher,
             'coures_list':all_coures_list,
-            'tj_teacher':tj_teacher
+            'tj_teacher':tj_teacher,
+            'has_fav_org':has_fav_org,
+            'has_fav_teacher':has_fav_teacher
         })

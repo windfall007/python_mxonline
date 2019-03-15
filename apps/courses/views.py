@@ -1,6 +1,7 @@
 #-*- encodeing:utf-8 -*-
 from django.shortcuts import render
 from django.views.generic.base import View
+from django.db.models import Q
 
 
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
@@ -16,6 +17,13 @@ class CourseListView(View):
         all_courses = Coures.objects.all().order_by("-add_time") #时间排序
         
         hot_courses = Coures.objects.all().order_by("-click_nums")[:3]
+
+        #课程搜索
+        search_keywords = request.GET.get('keywords', "")
+        if search_keywords:
+            #搜索联合查询
+            all_courses = all_courses.filter(Q(name__icontains=search_keywords)|Q(desc__icontains=search_keywords)|Q(detail__icontains=search_keywords))
+
 
         sort =  request.GET.get('sort','')
         if sort == 'hot':
@@ -83,6 +91,14 @@ class CourseDetailsView(View):
 class CourseInfoView(LoginRequiredMixin,View):
     def get(self,request,course_id):
         coures =  Coures.objects.get(id = int(course_id))
+        coures.students += 1
+        coures.save()
+
+        #查询用户是否已经关联了该课程
+        user_courses = UserCoures.objects.filter(user=request.user, coures=coures)
+        if not user_courses:
+            user_course = UserCoures(user=request.user, coures=coures)
+            user_course.save()
 
         user_coures = UserCoures.objects.filter(coures = coures)
         #取所有学过这个课程的用户id

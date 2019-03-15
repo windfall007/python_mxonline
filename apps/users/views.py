@@ -10,7 +10,11 @@ from django.http import HttpResponse
 
 from .forms import LoginForm,RegisterForm,ForgetPwdForm,resetPwdForm
 from .models import Userprofile,EmailVerifyRecoed
+from operation.models import UserCoures,UserFav
+from organization.models import CouresOrg
+from courses.models import Teacher,Coures
 from utils.email_send import send_register_email
+from utils.mixin_utils import LoginRequiredMixin
 
 # Create your views here.
 
@@ -158,7 +162,54 @@ class setNewPwdView(View):
             return render(request, "login.html")
         else:
             return render(request, "password_reset.html", {"email":useremail,"reset_pwd_form":reset_pwd_form})    
+
+#个人资料
+class UserCenterInfoView(LoginRequiredMixin,View):
+    def get(self,request):
+        return render(request,'usercenter-info.html')
     
+#我的课程
+class UserCenterMycourseView(LoginRequiredMixin,View):
+    def get(self,request):
+        coures = UserCoures.objects.filter(user = request.user)
+        return render(request,'usercenter-mycourse.html',{
+            'coures':coures
+        })
 
 
+#我的收藏
+class UserCenterFavView(LoginRequiredMixin,View):
+    def get(self,request):
+        type = int(request.GET.get('type',0))
+        if type > 3 or type < 1:
+            type = 1
 
+        
+        def dataList(el):
+            list = []
+            data =  UserFav.objects.filter(fav_type= type,user = request.user)
+            for i in data:
+                row = el.objects.get(id = int(i.fav_id))
+                list.append(row)
+            return list
+        
+        #1"课程",2"课程机构",3"教师"
+        listdata = []
+        if type == 1:
+           listdata = dataList(Coures)
+
+        if type == 2:
+           listdata = dataList(CouresOrg)
+
+        if type == 3:
+           listdata = dataList(Teacher)           
+
+        return render(request,'usercenter-fav.html',{
+            'list':listdata,
+            'type':type
+        })
+
+#我的消息
+class UserCenterMessageView(View):
+    def get(self,request):
+        return render(request,'usercenter-message.html')
