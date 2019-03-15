@@ -14,7 +14,6 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/muke/course/common-less.css' %}">
 {% endblock css %}
 
-
 {% block content %}
 <div id="main">
     <div class="course-infos">
@@ -48,17 +47,13 @@
         <div class="info-bar clearfix">
             <div class="content-wrap clearfix">
                 <div class="content">
+                    {% block leftbox %}
                     <div class="mod-tab-menu">
                         <ul class="course-menu clearfix">
-                            <li><a class="ui-tabs-active active" id="learnOn" href="{% url 'course:course_info' course.id %}"><span>章节</span></a></li>
-                            <li><a id="commentOn" class="" href="course-comment.html"><span>评论</span></a></li>
+                            <li><a  class=" {% ifequal tag 'info' %}ui-tabs-active active{% endifequal %}" id="learnOn" href="{% url 'course:course_info' course.id %}"><span>章节</span></a></li>
+                            <li><a  class=" {% ifequal tag 'comment' %}ui-tabs-active active{% endifequal %}" id="commentOn" class="" href="{% url 'course:course_comment' course.id %}"><span>评论</span></a></li>
                         </ul>
                     </div>
-                    <div id="notice" class="clearfix">
-                        <div class="l"> <strong>课程公告:</strong> <a href="javascript:void(0)">Spring的文档以及相关的jar文件已上传</a>
-                        </div>
-                    </div>
-
                     <div class="mod-chapters">
                         {% for lesson in course.get_course_lesson %}
                         <div class="chapter chapter-active">
@@ -70,27 +65,25 @@
                                             {{ video.name }} (0)
                                             <i class="study-state"></i>
                                         </a>
-                                    </li>                                      
+                                    </li>
                                     {% endfor %}
                                 </ul>
                             </div>                            
                         {% endfor %}
-                    </div>
-
+                    </div>                      
+                    {% endblock leftbox %}
                 </div>
                 <div class="aside r">
                     <div class="bd">
-
                         <div class="box mb40">
                             <h4>资料下载</h4>
                             <ul class="downlist">
-
+                                {% for items in course.get_coures_res  %}
                                 <li>
-                                    <span><i class="aui-iconfont aui-icon-file"></i>&nbsp;&nbsp;前端页面</span>
-                                    <a href="/static/media/course/resource/2016/11/media.zip" class="downcode" target="_blank"
-                                        download="" data-id="274" title="">下载</a>
+                                    <span><i class="aui-iconfont aui-icon-file"></i>&nbsp;&nbsp;{{ items.name }}</span>
+                                    <a href="{{ MEDIA_URL }}{{ items.download }}" class="downcode" target="_blank"  download="" data-id="274" title="">下载</a>
                                 </li>
-
+                                {% endfor %}
                             </ul>
                         </div>
                         <div class="box mb40">
@@ -125,43 +118,15 @@
                                 <div class="cp-tab-pannel js-comp-tab-pannel" data-pannel="course" style="display: block">
                                     <!-- img 200 x 112 -->
                                     <ul class="other-list">
-
+                                        {% for items in relate_courses  %}
                                         <li class="curr">
                                             <a href="course-detail.html" target="_blank">
                                                 <img src="/static/media/courses/2016/11/540e57300001d6d906000338-240-135_n0L8vbw.jpg"
                                                     alt="django与vuejs实战项目2">
-                                                <span class="name autowrap">django与vuejs实战项目2</span>
+                                                <span class="name autowrap">{{ items.name }}</span>
                                             </a>
-                                        </li>
-
-                                        <li class="curr">
-                                            <a href="course-detail.html" target="_blank">
-                                                <img src="/static/media/courses/2016/12/python面向对象.jpg" alt="python面向对象">
-                                                <span class="name autowrap">python面向对象</span>
-                                            </a>
-                                        </li>
-
-                                        <li class="curr">
-                                            <a href="course-detail.html" target="_blank">
-                                                <img src="/static/media/courses/2016/12/python文件处理.jpg" alt="python文件处理">
-                                                <span class="name autowrap">python文件处理</span>
-                                            </a>
-                                        </li>
-
-                                        <li class="curr">
-                                            <a href="course-detail.html" target="_blank">
-                                                <img src="/static/media/courses/2016/11/mysql.jpg" alt="django入门">
-                                                <span class="name autowrap">django入门</span>
-                                            </a>
-                                        </li>
-
-                                        <li class="curr">
-                                            <a href="course-detail.html" target="_blank">
-                                                <img src="/static/media/courses/2016/12/mysql.jpg" alt="xadmin进阶开发">
-                                                <span class="name autowrap">xadmin进阶开发</span>
-                                            </a>
-                                        </li>
-
+                                        </li>                                          
+                                        {% endfor %}
                                     </ul>
                                 </div>
                                 <div class="cp-tab-pannel js-comp-tab-pannel" data-pannel="plan">
@@ -185,4 +150,9 @@
         </div>
     </div>
 </div>
+{% block commentjs %}{% endblock commentjs %}
 {% endblock content %}
+
+
+
+    

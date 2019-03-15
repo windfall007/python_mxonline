@@ -46,6 +46,13 @@ class Coures(models.Model):
     def get_course_lesson(self):
         #所有课程的章节
         return self.lesson_set.all()
+    
+    def get_coures_res(self):
+        return self.couresres_set.all()
+
+    def get_course_comment(self):
+        #获取课程评论
+        return self.courescomments_set.all().order_by("-id")
 
 
 #章节表设计
@@ -63,7 +70,6 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.name
-    
 
 #视频表设计
 class Video(models.Model):
@@ -79,8 +85,6 @@ class Video(models.Model):
     
     def __str__(self):
         return self.name
-    
-
 
 #课程资源
 class CouresRes(models.Model):

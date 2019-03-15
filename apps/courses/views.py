@@ -82,10 +82,28 @@ class CourseDetailsView(View):
 #继承修饰器， 没登录跳转到登录， 顺序 从左到右
 class CourseInfoView(LoginRequiredMixin,View):
     def get(self,request,course_id):
-        course =  Coures.objects.get(id = int(course_id))
-        course.students += 1
-        course.save()
+        coures =  Coures.objects.get(id = int(course_id))
 
+        user_coures = UserCoures.objects.filter(coures = coures)
+        #取所有学过这个课程的用户id
+        user_ids = [ items.user.id  for items in user_coures  ] #py列表式
+        #所有用户学过的课程
+        all_user_coures = UserCoures.objects.filter(user_id__in = user_ids) #user_id解释：user是UserCoures的外键，可用通过_id取出user.id的值,__in可以遍历数组中的值只要有就返回出来
+        #取出所有用户学过的课程id
+        all_coures_ids = [ items.coures.id  for items in all_user_coures  ]
+        #获取学过其他课程
+        relate_courses = Coures.objects.filter(id__in=all_coures_ids).order_by("-click_nums")[:5]
         return render(request,'course-video.html',{
-            'course':course
+            'course':coures,
+            'relate_courses':relate_courses,
+            'tag':'info'
         })
+
+
+class CourseCommentView(LoginRequiredMixin,View):
+    def get(self,request,course_id):
+        course =  Coures.objects.get(id = int(course_id))
+        return render(request,'course-comment.html',{
+            'course':course,
+            'tag':'comment'
+        })        

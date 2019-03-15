@@ -9,9 +9,9 @@
     <div class="brief group_list">
         {% for course in all_courses.object_list  %}
             <div class="module1_5 box">
-                <a href="course-detail.html"><img width="214" src="{{ MEDIA_URL }}{{course.cover}}" /></a>
+                <a href="{% url 'course:course_details' course.id %}"><img width="214" src="{{ MEDIA_URL }}{{course.cover}}" /></a>
                 <div class="des">
-                    <a href="course-detail.html">
+                    <a href="{% url 'course:course_details' course.id %}">
                         <h2>{{course.name}}</h2>
                     </a>
                     <span class="fl">课时：<i class="key">{{ course.learn_times }}</i></span>

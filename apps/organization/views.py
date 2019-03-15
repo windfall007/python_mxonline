@@ -15,7 +15,6 @@ from .forms import UserAskForm
 #判罚用户是否登录
 def validateUserLogin(request,fav_id,fav_type):
     if request.user.is_authenticated():
-        print(request.user,fav_id,fav_type)
         if UserFav.objects.filter(user=request.user, fav_id=fav_id, fav_type=fav_type):
             return True
         else:
@@ -217,3 +216,47 @@ class AddUserFavView(View):
                     return HttpResponse('{"status":"fail", "msg":"收藏出错"}', content_type='application/json')
     
 
+#课程列表
+class TeacherListView(View):
+    def get(self,request):
+        all_teacher =  Teacher.objects.all()
+        sort = request.GET.get('sort', '')
+        if sort == 'hot':
+            all_teacher =  all_teacher.order_by('-click_num')
+        else:
+            sort = ''
+
+        tj_teacher = all_teacher.order_by('-fav_num')[:5]
+
+        #分页
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        p = Paginator(all_teacher, 2, request=request)
+
+        teachers = p.page(page)        
+        return render(request,'teachers-list.html',{
+            'teachers':teachers,
+            'sort':sort,
+            'tj_teacher':tj_teacher
+        })
+
+
+class TeacherDetailsView(View):
+    def get(self,request,teacher_id):
+        teacher = Teacher.objects.get(id=int(teacher_id))
+        teacher.click_num += 1
+        teacher.save()
+
+        all_coures_list =  Coures.objects.filter(teacher =teacher,coures_org = teacher.org)
+
+
+        tj_teacher =Teacher.objects.filter(org = teacher.org).order_by("-click_num")[:3]
+
+        return render(request,'teacher-detail.html',{
+            'teacher':teacher,
+            'coures_list':all_coures_list,
+            'tj_teacher':tj_teacher
+        })
