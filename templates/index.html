@@ -6,11 +6,13 @@
         <div class="fl">
             <div class="imgslide">
                 <ul class="imgs">
+                    {% for items in all_banners  %}
                     <li>
-                        <a href="http://www.imooc.com">
-                            <img width="1200" height="478" src="../media/banner/2016/11/57a801860001c34b12000460.jpg" />
+                        <a href="{{ items.url }}">
+                            <img width="1200" height="478" src="{{ MEDIA_URL }}{{ items.image }}" />
                         </a>
-                    </li>
+                    </li>                      
+                    {% endfor %}
                 </ul>
             </div>
             <div class="unslider-arrow prev"></div>
@@ -52,43 +54,42 @@
                 <div class="module1_1 left">
                     <img width="228" height="614" src="/static/images/module1_1.jpg" />
                     <p class="fisrt_word">名师授课<br />专业权威</p>
-                    <a class="more" href="course-list.html">查看更多课程 ></a>
+                    <a class="more" href="{% url 'course:course_list' %}">查看更多课程 ></a>
                 </div>
                 <div class="right group_list">
                     <div class="module1_2 box">
                         <div class="imgslide2">
                             <ul class="imgs">
+                                {% for items  in banner_courses %}
                                 <li>
-                                    <a href="course-detail.html">
-                                        <img width="470" height="300" src="../media/courses/2016/12/python文件处理.jpg" />
+                                    <a href="{% url 'course:course_details' items.id %}">
+                                        <img width="470" height="300" src="{{ MEDIA_URL }}{{ items.cover }}" />
                                     </a>
-                                </li>
-                                <li>
-                                    <a href="course-detail.html">
-                                        <img width="470" height="300" src="../media/courses/2016/12/python面向对象.jpg" />
-                                    </a>
-                                </li>
+                                </li>                                    
+                                {% endfor %}
                             </ul>
                         </div>
                         <div class="unslider-arrow2 prev"></div>
                         <div class="unslider-arrow2 next"></div>
                     </div>
-                    <div class="module1_3 box">
-                        <a href="course-detail.html">
-                            <img width="233" height="190" src="../media/courses/2016/11/mysql.jpg" />
+                    {% for items in courses  %}
+                    <div class="module1_1 box">
+                        <a href="{% url 'course:course_details' items.id %}">
+                            <img width="233" height="190" src="{{ MEDIA_URL }}{{ items.cover }}" />
                         </a>
                         <div class="des">
                             <a href="course-detail.html">
-                                <h2 title="django入门">django入门</h2>
+                                <h2 title="django入门">{{ items.name }}</h2>
                             </a>
-                            <span class="fl">难度：<i class="key">初级</i></span>
-                            <span class="fr">学习人数：3</span>
+                            <span class="fl">难度：<i class="key">{{ items.get_degree_display }}</i></span>
+                            <span class="fr">学习人数：{{ items.students }}</span>
                         </div>
                         <div class="bottom">
-                            <span class="fl" title="慕课网">慕课网</span>
-                            <span class="star fr">0</span>
+                            <span class="fl" title="{{ items.coures_org.name }}">{{ items.coures_org.name }}</span>
+                            <span class="star fr">{{ items.fav_num }}</span>
                         </div>
-                    </div>
+                    </div>                      
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -102,23 +103,25 @@
                 <div class="module3_1 left">
                     <img width="228" height="463" src="/static/images/module3_1.jpg" />
                     <p class="fisrt_word">名校来袭<br />权威认证</p>
-                    <a class="more" href="org-list.html">查看更多机构 ></a>
+                    <a class="more" href="{% url 'org:org_list' %}">查看更多机构 ></a>
                 </div>
                 <div class="right">
                     <ul>
+                        {% for items in course_orgs  %}
                         <li class="">
-                            <a href="org-detail-homepage.html">
+                            <a href="{% url 'org:org_home' items.id %}">
                                 <div class="company">
-                                    <img width="184" height="100" src="../media/org/2016/11/imooc.png" />
+                                    <img width="184" height="100" src="{{ MEDIA_URL }}{{ items.image }}" />
                                     <div class="score">
                                         <div class="circle">
-                                            <h2>全国知名</h2>
+                                            <h2>{{ items.name }}</h2>
                                         </div>
                                     </div>
                                 </div>
-                                <p><span class="key" title="慕课网">慕课网</span></p>
+                                <p><span class="key" title="{{ items.name }}">{{ items.name }}</span></p>
                             </a>
-                        </li>
+                        </li>                          
+                        {% endfor %}
                     </ul>
                 </div>
             </div>

@@ -1,16 +1,20 @@
 #-*- encodeing:utf-8 -*-
 from django.shortcuts import render
-from django.contrib.auth import authenticate,login #验证方法
+from django.contrib.auth import authenticate,login,logout #验证方法
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password #加密密码
 from django.db.models import Q #并级查询数据
 from django.views.generic.base import View
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 
-from .forms import LoginForm,RegisterForm,ForgetPwdForm,resetPwdForm
-from .models import Userprofile,EmailVerifyRecoed
-from operation.models import UserCoures,UserFav
+from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
+
+
+from .forms import LoginForm,RegisterForm,ForgetPwdForm,resetPwdForm,UserInfoForm,UploadImageForm,ModifyPwdForm
+from .models import Userprofile,EmailVerifyRecoed,Banner
+from operation.models import UserCoures,UserFav,UserMessage
 from organization.models import CouresOrg
 from courses.models import Teacher,Coures
 from utils.email_send import send_register_email
@@ -66,7 +70,8 @@ class LoginView(View):
                 if user.is_active:
                     login(request,user) #django自带的登录
                     #登录成功跳转首页
-                    return render(request,"index.html")
+                    return HttpResponseRedirect(reverse("index"))
+                    # return render(request,"index.html")
                 else:
                     return render(request,"login.html",{'msg':"用户未激活","login_form":login_form})
             else:
@@ -167,6 +172,17 @@ class setNewPwdView(View):
 class UserCenterInfoView(LoginRequiredMixin,View):
     def get(self,request):
         return render(request,'usercenter-info.html')
+
+    def post(self, request):
+        #instance 可以直接让在其方法上保存
+        user_info_form = UserInfoForm(request.POST, instance=request.user)
+        if user_info_form.is_valid():
+            user_info_form.save()
+            return HttpResponse('{"status":"success"}', content_type='application/json')
+        else:
+            return HttpResponse(json.dumps(user_info_form.errors), content_type='application/json')   
+
+
     
 #我的课程
 class UserCenterMycourseView(LoginRequiredMixin,View):
@@ -210,6 +226,96 @@ class UserCenterFavView(LoginRequiredMixin,View):
         })
 
 #我的消息
-class UserCenterMessageView(View):
+class UserCenterMessageView(LoginRequiredMixin,View):
     def get(self,request):
-        return render(request,'usercenter-message.html')
+        all_messages = UserMessage.objects.filter(user = request.user.id)
+        #用户进入个人消息后清空未读消息的记录
+        all_unread_messages = UserMessage.objects.filter(user=request.user.id, has_read=False)
+        for unread_messages in all_unread_messages:
+            unread_messages.has_read = True
+            unread_messages.save()
+
+        #对个人消息进行分页
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        p = Paginator(all_messages, 5, request=request)
+
+        messages = p.page(page)
+
+        return render(request,'usercenter-message.html',{
+            "messages":messages
+        })
+
+
+class UploadImageView(LoginRequiredMixin, View):
+    """
+    用户修改头像
+    """
+    def post(self, request):
+        #文件格式需要加上request.FILES
+        image_form = UploadImageForm(request.POST, request.FILES, instance=request.user)
+        if image_form.is_valid():
+            image_form.save()
+            return HttpResponse('{"status":"success"}', content_type='application/json')
+        else:
+            return HttpResponse('{"status":"fail"}', content_type='application/json')
+
+
+
+
+class UpdatePwdView(LoginRequiredMixin, View):
+    """ 修改密码 """
+    def post(self, request):
+        modify_form = ModifyPwdForm(request.POST)
+        if modify_form.is_valid():
+            pwd1 = request.POST.get("password1", "")
+            pwd2 = request.POST.get("password2", "")
+            if pwd1 != pwd2:
+                return HttpResponse('{"status":"fail","msg":"密码不一致"}', content_type='application/json')
+            user = request.user
+            user.password = make_password(pwd2)
+            user.save()
+
+            return HttpResponse('{"status":"success"}', content_type='application/json')
+        else:
+            return HttpResponse(json.dumps(modify_form.errors), content_type='application/json')
+
+    
+class SendEmailCodeView(LoginRequiredMixin, View):
+    """
+    发送邮箱验证码
+    """
+    def get(self, request):
+        email = request.GET.get('email', '')
+
+        if UserProfile.objects.filter(email=email):
+            return HttpResponse('{"email":"邮箱已经存在"}', content_type='application/json')
+        send_register_email(email, "update_email")
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+
+
+class LogoutView(View):
+    """用户登出 """
+    def get(self, request):
+        logout(request)
+        return HttpResponseRedirect(reverse("index"))
+
+
+class IndexView(View):
+    #慕学在线网 首页
+    def get(self, request):
+        #取出轮播图
+        all_banners = Banner.objects.all().order_by('index')
+        courses = Coures.objects.filter(is_banner=False)[:6]
+        banner_courses = Coures.objects.filter(is_banner=True)[:3]
+        course_orgs = CouresOrg.objects.all()[:15]
+        return render(request, 'index.html', {
+            'all_banners':all_banners,
+            'courses':courses,
+            'banner_courses':banner_courses,
+            'course_orgs':course_orgs
+        })        

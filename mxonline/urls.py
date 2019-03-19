@@ -20,14 +20,14 @@ import xadmin
 from django.views.static import serve
 
 
-from users.views import LoginView,RegisterView,ActiveUserView,ForgetPwdView,PwdResetView,setNewPwdView
+from users.views import LoginView,RegisterView,ActiveUserView,ForgetPwdView,PwdResetView,setNewPwdView,LogoutView,IndexView
 from courses.views import CourseListView
 from mxonline.settings import MEDIA_ROOT #上传文件夹路径
 
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
-    url('^$',TemplateView.as_view(template_name = "index.html"), name ="index"),
+    url('^$',IndexView.as_view(), name ="index"),
     url('^login/$',LoginView.as_view(), name ="login"),
     url('^register/$',RegisterView.as_view(), name ="register"),
     url(r'^active/(?P<active_code>.*)/$',ActiveUserView.as_view(),name="active"),
@@ -35,6 +35,9 @@ urlpatterns = [
     url(r'^reset/(?P<reset_code>.*)/$', PwdResetView.as_view(), name="reset"),
     url('^setnewpwd/$',setNewPwdView.as_view(), name ="setnewpwd"),
     url(r'^captcha/', include('captcha.urls')),#验证码
+
+    #用户登出
+    url('^logout/$', LogoutView.as_view(), name="logout"),
 
     #课程机构url配置
     url(r'^org/', include('organization.urls', namespace="org")),

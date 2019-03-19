@@ -2,7 +2,7 @@
 
 from django.conf.urls import url,include
 
-from .views import UserCenterInfoView,UserCenterMycourseView,UserCenterMessageView,UserCenterFavView
+from .views import UserCenterInfoView,UserCenterMycourseView,UserCenterMessageView,UserCenterFavView,UploadImageView
 
 
 urlpatterns = [
@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^mycourse/$', UserCenterMycourseView.as_view(), name="usercenter_mycourse"),
     url(r'^fav/$', UserCenterFavView.as_view(), name="usercenter_fav"),
     url(r'^message/$', UserCenterMessageView.as_view(), name="usercenter_message"),
+    url(r'^uploadimage/$', UploadImageView.as_view(), name="usercenter_uploadimage"),
 ]

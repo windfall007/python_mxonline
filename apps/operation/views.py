@@ -29,3 +29,6 @@ class AddCommentView(View):
 
         else:
             return HttpResponse('{"status":"fail", "msg":"用户未登录"}', content_type='application/json')
+
+
+    

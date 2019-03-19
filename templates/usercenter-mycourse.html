@@ -11,7 +11,7 @@
             {% for items in coures %}
             <div class="module1_5 box">
                 <a href="{% url 'course:course_details' items.coures.id  %}">
-                    <img width="214" height="190" class="scrollLoading" src="{{ MEDIA_URL }}{{ items.coures.id }}" />
+                    <img width="214" height="190" class="scrollLoading" src="{{ MEDIA_URL }}{{ items.coures.cover }}" />
                 </a>
                 <div class="des">
                     <a href="{% url 'course:course_details' items.coures.id  %}">
@@ -22,7 +22,7 @@
                 </div>
                 <div class="bottom">
                     <span class="fl">{{ items.coures.coures_org.name }}</span>
-                    <span class="star fr  notlogin" data-favid="15">0</span>
+                    <span class="star fr  notlogin" data-favid="15">{{ items.coures.fav_num }}</span>
                 </div>
             </div>              
             {% endfor %}

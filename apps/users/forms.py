@@ -3,6 +3,8 @@
 #预处理标单
 from django import forms
 from captcha.fields import CaptchaField
+from .models import Userprofile
+
 
 class LoginForm(forms.Form):
     """LoginForm definition."""
@@ -24,4 +26,20 @@ class resetPwdForm(forms.Form):
     password = forms.CharField(required = True , min_length = 5)
     password2 = forms.CharField(required = True , min_length = 5)
     
-    
+class UserInfoForm(forms.ModelForm):
+    class Meta:
+        model = Userprofile
+        fields = ['nick_name', 'gender', 'birday', 'address', 'mobile']
+
+
+
+class UploadImageForm(forms.ModelForm):
+    class Meta:
+        model = Userprofile
+        fields = ['image']
+
+
+class ModifyPwdForm(forms.Form):
+    password1 = forms.CharField(required=True, min_length=5)
+    password2 = forms.CharField(required=True, min_length=5)
+        

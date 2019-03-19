@@ -23,6 +23,7 @@ def validateUserLogin(request,fav_id,fav_type):
     else:
         return False
 
+
 class orglistView(View):
     def get(self,request):
         #查询数据库
@@ -31,7 +32,7 @@ class orglistView(View):
         search_keywords = request.GET.get('keywords', "")
         if search_keywords:
             #搜索联合查询 __i 不区分大小写，contains 类似 SQL得linke语句
-            org_list = org_list.filter(Q(name__icontains=search_keywords)|Q(desc__icontains=search_keywords)|Q(detail__icontains=search_keywords))
+            org_list = org_list.filter(Q(name__icontains=search_keywords)|Q(desc__icontains=search_keywords)|Q(desc__icontains=search_keywords))
 
         
         all_city = CityDict.objects.all()

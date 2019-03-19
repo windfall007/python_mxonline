@@ -3,7 +3,6 @@ import xadmin
 
 from .models import Coures,Lesson,Video,CouresRes
 
-
 class CouresAdmin(object):
     list_display = ['name','coures_org','desc','detail','degree','tag','teacher','get_lesson_num','learn_times','students','fav_num','click_nums','add_time']
     search_fields = ['coures_org','cover','name','desc','detail','degree','teacher','learn_times','students','fav_num','click_nums']
